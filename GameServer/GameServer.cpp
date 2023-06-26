@@ -11,7 +11,7 @@
 #include "ConcurrentStack.h"
 
 LockQueue<int32> q;
-LockStack<int32> s;
+LockFreeStack<int32> s;
 
 std::mutex m;
 
@@ -19,10 +19,10 @@ void Push()
 {
 	while (true)
 	{
-		std::lock_guard<std::mutex> lock(m);
+		//std::lock_guard<std::mutex> lock(m);
 
 		int32 value = rand() % 100;
-		q.Push(value);
+		s.Push(value);
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	}
@@ -34,7 +34,7 @@ void Pop()
 	{
 		int32 data = 0;
 
-		if (q.TryPop(OUT data))
+		if (s.TryPop(OUT data))
 		{
 			std::cout << data << std::endl;
 		}
@@ -44,7 +44,6 @@ void Pop()
 
 int main()
 {
-
 	std::thread t1(Push);
 	std::thread t2(Pop);
 	std::thread t4(Pop);

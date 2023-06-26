@@ -45,4 +45,3 @@ private:
 	std::mutex mMutex;
 	std::condition_variable mCV;
 };
-

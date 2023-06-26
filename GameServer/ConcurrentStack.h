@@ -59,3 +59,128 @@ private:
 	std::condition_variable mCV;
 };
 
+template<typename T>
+class LockFreeStack
+{
+	struct Node
+	{
+		Node(const T& value) : data(value), next(nullptr) {}
+
+		T data;
+		Node* next;
+	};
+
+public:
+	void Push(const T& value)
+	{
+		// 1) create a new node
+		// 2) new node's nest -> mHead
+		// 3) mHead = new node
+
+		Node* node = new Node(value);
+		node->next = mHead;
+		
+		/*
+		if (mHead == node->next)
+		{
+			mHead = node;
+			return true;
+		}
+		else
+		{
+			node->next = mHead;
+			return false;
+		}
+		*/
+		while (mHead.compare_exchange_weak(node->next, node) == false) {}
+	}
+
+	bool TryPop(T& value)
+	{
+		++mPopCount;
+
+		Node* previousHead = mHead;
+
+		while (previousHead &&
+				mHead.compare_exchange_weak(previousHead, previousHead->next) == false) {}
+
+		if (previousHead == nullptr)
+		{
+			--mPopCount;
+			return false;
+		}
+
+		value = previousHead->data;
+		TryDelete(previousHead);
+
+		//delete oldHead;
+		return true;
+	}
+
+	void TryDelete(Node* previousHead)
+	{
+		// if there is no other threads doing Pop but me
+		if (mPopCount == 1)
+		{
+			// trying to delete the pending list also
+			Node* node = mPendingList.exchange(nullptr);
+			
+			// if there was no interruption
+			// even if someone interferes, the data is already separated
+			if (--mPopCount == 0)
+			{
+				DeleteNodes(node);
+			}
+			else if (node)
+			{
+				ChainPendingNodeList(node);
+			}
+
+			delete previousHead;
+		}
+		else
+		{
+			ChainPendingNode(previousHead);
+			--mPopCount;
+		}
+	}
+
+	void ChainPendingNodeList(Node* first, Node* last)
+	{
+		last->next = mPendingList;
+
+		while (mPendingList.compare_exchange_weak(last->next, first) == false) {}
+	}
+
+	void ChainPendingNodeList(Node* node)
+	{
+		Node* last = node;
+
+		while (last->next)
+		{
+			last = last->next;
+		}
+
+		ChainPendingNodeList(node, last);
+	}
+
+	void ChainPendingNode(Node* node)
+	{
+		ChainPendingNodeList(node, node);
+	}
+
+	static void DeleteNodes(Node* node)
+	{
+		while (node)
+		{
+			Node* next = node->next;
+			delete node;
+			node = next;
+		}
+	}
+
+private:
+	std::atomic<Node*> mHead;
+	std::atomic<uint32> mPopCount = 0; // the number of threads using TryPop()
+	std::atomic<Node*> mPendingList;
+};
