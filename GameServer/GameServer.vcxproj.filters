@@ -7,6 +7,9 @@
     <Filter Include="Utils">
       <UniqueIdentifier>{21f9304e-4aff-4e67-9603-15727c34252a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Main\Practice">
+      <UniqueIdentifier>{606d3fd0-39e3-48ac-9cc1-80afd038e692}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameServer.cpp">
@@ -16,21 +19,21 @@
       <Filter>Utils</Filter>
     </ClCompile>
     <ClCompile Include="ConcurrentQueue.cpp">
-      <Filter>Main</Filter>
+      <Filter>Main\Practice</Filter>
     </ClCompile>
     <ClCompile Include="ConcurrentStack.cpp">
-      <Filter>Main</Filter>
+      <Filter>Main\Practice</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="ConcurrentQueue.h">
-      <Filter>Main</Filter>
-    </ClInclude>
     <ClInclude Include="ConcurrentStack.h">
-      <Filter>Main</Filter>
+      <Filter>Main\Practice</Filter>
+    </ClInclude>
+    <ClInclude Include="ConcurrentQueue.h">
+      <Filter>Main\Practice</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

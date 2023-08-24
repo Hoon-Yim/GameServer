@@ -1,54 +1,24 @@
 #include "pch.h"
-#include "CorePch.h"
+#include "CoreMacro.h"
+#include "ThreadManager.h"
 
-#include <iostream>
-#include <thread>
-#include <atomic>
-#include <mutex>
-#include <windows.h>
+CoreGlobal GCoreGlobal;
 
-#include "ConcurrentQueue.h"
-#include "ConcurrentStack.h"
-
-LockQueue<int32> q;
-LockFreeStack<int32> s;
-
-std::mutex m;
-
-void Push()
+void ThreadMain()
 {
 	while (true)
 	{
-		//std::lock_guard<std::mutex> lock(m);
-
-		int32 value = rand() % 100;
-		s.Push(value);
-
-		std::this_thread::sleep_for(std::chrono::milliseconds(10));
-	}
-}
-
-void Pop()
-{
-	while (true)
-	{
-		int32 data = 0;
-
-		if (s.TryPop(OUT data))
-		{
-			std::cout << data << std::endl;
-		}
-
+		std::cout << "Hello I am thread.. " << LThreadID << std::endl;
+		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
 }
 
 int main()
 {
-	std::thread t1(Push);
-	std::thread t2(Pop);
-	std::thread t4(Pop);
+	for (int32 i = 0; i < 5; ++i)
+	{
+		GThreadManager->Launch(ThreadMain);
+	}
 
-	t1.join();
-	t2.join();
-	t4.join();
+	GThreadManager->Join();
 }

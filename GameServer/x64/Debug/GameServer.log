@@ -1,4 +1,6 @@
-﻿  ConcurrentStack.cpp
+﻿  pch.cpp
+  ConcurrentQueue.cpp
+  ConcurrentStack.cpp
   GameServer.cpp
   Generating Code...
   GameServer.vcxproj -> D:\toy_projects\GameServer\Binary\Debug\GameServer.exe

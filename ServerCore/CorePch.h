@@ -1,6 +1,10 @@
 #pragma once
 
 #include "Types.h"
+#include "CoreGlobal.h"
+#include "CoreTLS.h"
+#include "CoreGlobal.h"
+
 #include <iostream>
 #include <vector>
 #include <list>
@@ -10,7 +14,3 @@
 #include <set>
 #include <unordered_map>
 #include <unordered_set>
-
-//using namespace std;
-
-void HelloWorld();
